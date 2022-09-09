@@ -7,6 +7,14 @@ const __dirname = path.dirname(__filename);
 const databaseCart = path.join(__dirname, '../database/cart.txt');
 const databaseProducts = path.join(__dirname, '../database/products.txt');
 
+const getMaxId = () => {
+    const ids = databaseCart.map(item => item.id);
+    if (ids.length === 0){
+        return 0;
+    }
+    return Math.max(...ids);
+}
+
 const readFile = async(file) => {
     try {
         const data = await fs.promises.readFile(file, 'utf-8', (err, data) =>{
@@ -22,8 +30,9 @@ const readFile = async(file) => {
 const saveCart = async(req, res) => {
     try {
         const databaseData = await readFile(databaseCart)
+        const id = getMaxId() + 1;
         const cart = {
-            id: 1,
+            id: id,
             timestamp: Date.now(),
             products: []
         }
@@ -105,7 +114,7 @@ const saveProductByID = async (req, res) => {
     }
 }
 
-deleteCartProductByID = async(req, res) => {
+ const deleteCartProductByID = async(req, res) => {
     const {id, productId} = req.params 
     try {
         const databaseDataCart = await readFile(databaseCart)
