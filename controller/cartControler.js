@@ -74,15 +74,12 @@ const getProducts = async(req, res) => {
     const {id} = req.params
     try {
         const databaseData = await readFile(databaseCart)
-        databaseData.forEach(cart => {
-            if(cart.id == id){
-                if(cart.products != []){
-                    res.send(cart.products)
-                } else {
-                    console.error(`El carrito con ID: ${id} no tiene productos!`)
-                }
-            }
-        })
+        const cartWanted = await databaseData.find(cart => cart.id == id)
+        if(cartWanted != undefined){
+            res.send(cartWanted.products)
+        } else {
+            res.status(400).json({error: `El carrito de ID: ${id} no existe`})
+        }
     } catch (error) {
         console.error(`Error: ${error}`)
     }

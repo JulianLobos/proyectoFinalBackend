@@ -5,7 +5,6 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const databaseProducts = path.join(__dirname, '../database/products.json')
-
 const administrador = true;
 
 const readFile = async(file) => {
@@ -51,6 +50,7 @@ const getProductById = async(req, res) => {
         console.error(`Error: ${error}`)
     }
 }
+
 const saveProduct = async(req, res) => {
     if(administrador == true){
         const {name, price, image, description, code, stock} = req.body
