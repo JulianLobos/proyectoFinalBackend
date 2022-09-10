@@ -61,7 +61,7 @@ const deleteCart = async(req, res) => {
             await fs.promises.writeFile(databaseCart, JSON.stringify(databaseData, null, 2), err => {
                 if(err) throw err
             })
-            res.status(200).json({message: 'Carrito borrado!'})
+            res.status(200).json({message: `Carrito con ID: ${id} borrado!`})
         } else {
             res.status(400).json({error: 'El carrito no existe'})
         }
@@ -76,7 +76,11 @@ const getProducts = async(req, res) => {
         const databaseData = await readFile(databaseCart)
         databaseData.forEach(cart => {
             if(cart.id == id){
-                res.send(cart.products)
+                if(cart.products != []){
+                    res.send(cart.products)
+                } else {
+                    console.error(`El carrito con ID: ${id} no tiene productos!`)
+                }
             }
         })
     } catch (error) {
@@ -86,7 +90,7 @@ const getProducts = async(req, res) => {
 
 const saveProductByID = async (req, res) => {
     const {id} = req.params
-    const {productArrID} = req.body
+    const {arrayProductsIds} = req.body
 
     try {
         const databaseDataCart = await readFile(databaseCart)
@@ -95,7 +99,7 @@ const saveProductByID = async (req, res) => {
             const databaseDataProducts = await readFile(databaseProducts)
             const dataProducts = []
             databaseDataProducts.forEach(product => {
-                productArrID.forEach(id => {
+                arrayProductsIds.forEach(id => {
                     if(product.id == id){
                         dataProducts.push(product)
                     }
@@ -120,12 +124,12 @@ const saveProductByID = async (req, res) => {
 }
 
  const deleteCartProductByID = async(req, res) => {
-    const {id, productId} = req.params 
+    const {id, id_producto} = req.params 
     try {
         const databaseDataCart = await readFile(databaseCart)
         const cartData = databaseDataCart.find(cart => cart.id == id)
         if(cartData){
-            const productIndex = cartData.products.findIndex(product => product.id == productId)
+            const productIndex = cartData.products.findIndex(product => product.id == id_producto)
             if(productIndex != -1){
                 cartData.products.splice(productIndex, 1)
                 await fs.promises.writeFile(databaseCart, JSON.stringify(databaseDataCart, null, 2), err => {
