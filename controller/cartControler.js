@@ -4,16 +4,8 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const databaseCart = path.join(__dirname, '../database/cart.txt');
-const databaseProducts = path.join(__dirname, '../database/products.txt');
-
-const getMaxId = () => {
-    const ids = databaseCart.map(item => item.id);
-    if (ids.length === 0){
-        return 0;
-    }
-    return Math.max(...ids);
-}
+const databaseCart = path.join(__dirname, '../database/cart.json');
+const databaseProducts = path.join(__dirname, '../database/products.json');
 
 const readFile = async(file) => {
     try {
@@ -27,10 +19,23 @@ const readFile = async(file) => {
     }
 }
 
+const getMaxId = async() => {
+    try {
+        const databaseData = await readFile(databaseCart);
+        const ids = databaseData.map(item => item.id);
+        if (ids.length === 0){
+            return 0;
+        }
+        return Math.max(...ids);
+    } catch (error) {
+        console.error(`Error: ${error}`)
+    }
+}
+
 const saveCart = async(req, res) => {
     try {
         const databaseData = await readFile(databaseCart)
-        const id = getMaxId() + 1;
+        const id = await getMaxId() + 1;
         const cart = {
             id: id,
             timestamp: Date.now(),

@@ -4,17 +4,9 @@ import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const databaseProducts = path.join(__dirname, '../database/products.txt')
+const databaseProducts = path.join(__dirname, '../database/products.json')
 
 const administrador = true;
-
-const getMaxId = () => {
-    const ids = databaseProducts.map(item => item.id);
-    if (ids.length === 0){
-        return 0;
-    }
-    return Math.max(...ids);
-}
 
 const readFile = async(file) => {
     try {
@@ -25,6 +17,19 @@ const readFile = async(file) => {
         return JSON.parse(data);
     } catch (error) {
         console.error(`Error: ${error}`)        
+    }
+}
+
+const getMaxId = async() => {
+    try {
+        const databaseData = await readFile(databaseProducts);
+        const ids = databaseData.map(item => item.id);
+        if (ids.length === 0){
+            return 0;
+        }
+        return Math.max(...ids);
+    } catch (error) {
+        console.error(`Error: ${error}`)
     }
 }
 
@@ -55,7 +60,7 @@ const saveProduct = async(req, res) => {
             const product = req.body
             try {
                 const databaseData = await readFile(databaseProducts)
-                product.id = getMaxId() + 1
+                product.id = await getMaxId() + 1
                 product.timestamp = Date.now()
                 databaseData.push(product)
                 await fs.promises.writeFile(databaseProducts, JSON.stringify(databaseData, null, 2), err => {
