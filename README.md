@@ -1,6 +1,10 @@
 # Primera entrega del proyecto final - Curso backend Coderhouse
 
 ## Para inicializar el proyecto ejecute en la terminal:
+**npm install**
+
+y luego:  
+
 **npm run start**
 
 ### Funcionalidades del router base 'api/productos':
